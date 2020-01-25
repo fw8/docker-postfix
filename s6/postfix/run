@@ -36,8 +36,7 @@ fi
 : "${USE_RELAY:=no}"
 
 if [ "${USE_CLIENT_RELAYHOSTS}" == "yes" ]; then
-    # TODO s6-svwait for dkim
-    echo "postfix >> Enabling relay hosts file"
+    echo "postfix >> Enabling client relay hosts file"
     sed -i 's/permit_mynetworks permit_sasl_authenticated/permit_mynetworks check_client_access hash:\/etc\/postfix\/relayhosts permit_sasl_authenticated/g' /etc/postfix/main.cf
 	
 	#if no relay hosts file, then create it

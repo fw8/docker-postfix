@@ -8,11 +8,6 @@ requires SMTP sending capabilities. Supports TLS out of the box and DKIM
 
 NOTE:  This is a fork of https://hub.docker.com/r/freinet/postfix-relay respository and added a client relay hosts option.
 
-[![Docker Automated build](https://img.shields.io/docker/cloud/automated/freinet/postfix-relay.svg)](https://hub.docker.com/r/freinet/postfix-relay/)
-[![Docker Build Status](https://img.shields.io/docker/cloud/build/freinet/postfix-relay.svg)](https://hub.docker.com/r/freinet/postfix-relay/builds/)
-[![Docker image size](https://images.microbadger.com/badges/image/freinet/postfix-relay.svg)](https://microbadger.com/images/freinet/postfix-relay)
-[![Docker image version](https://images.microbadger.com/badges/version/freinet/postfix-relay.svg)](https://microbadger.com/images/freinet/postfix-relay)
-
 ## Environment Variables
 
 - `MAILNAME` - set this to a legitimate FQDN hostname for this service (required).
@@ -83,13 +78,13 @@ The relays hosts file is created in this format
 192.168.1.12 OK
 ```
 
-Once the file has been edited, run the `/usr/sbin/update_relayhosts.sh` from the command line with
+Once the file has been edited, run the `/usr/sbin/update_clientrelayhosts.sh` from the command line with
 
 ```
-docker exec -it container_name /usr/sbin/update_relayhosts.sh
+docker exec -it container_name /usr/sbin/update_clientrelayhosts.sh
 ```
 
-Change `container_name` to be the name of the container.  The `update_relayshosts.sh` is just a shortcut to postmap and then reloads the configuration into postfix.
+Change `container_name` to be the name of the container.  The `update_clientrelayhosts.sh` is just a shortcut to postmap and then reloads the configuration into postfix.
 
 ## Test email
 
