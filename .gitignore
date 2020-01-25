@@ -3,3 +3,4 @@ dkim.key
 .project
 .buildpath
 .gitignore.swp
+docker-compose.yml
