@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-
 set -e
 
 [ "$DEBUG" == 'true' ] && set -x
@@ -31,6 +30,21 @@ if [ "${USE_DKIM}" == "yes" ]; then
     postconf -e milter_default_action="accept"
     postconf -e smtpd_milters="inet:localhost:8891"
     postconf -e non_smtpd_milters="inet:localhost:8891"
+fi
+
+# Relay Restrictions
+: "${USE_RELAY:=no}"
+
+if [ "${USE_CLIENT_RELAYHOSTS}" == "yes" ]; then
+    # TODO s6-svwait for dkim
+    echo "postfix >> Enabling relay hosts file"
+    sed -i 's/permit_mynetworks permit_sasl_authenticated/permit_mynetworks check_client_access hash:\/etc\/postfix\/relayhosts permit_sasl_authenticated/g' /etc/postfix/main.cf
+	
+	#if no relay hosts file, then create it
+	if [ ! -f /etc/postfix/relayhosts ]; then
+	    touch /etc/postfix/relayhosts
+	fi
+	postmap /etc/postfix/relayhosts
 fi
 
 # TLS

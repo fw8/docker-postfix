@@ -1,0 +1,12 @@
+version: '3'
+services:
+  postfix:
+    image:  postfix-relay:1 
+    container_name: postfix
+    restart: always
+    environment:
+      MAILNAME: test.thesmithcave.nz
+      MYNETWORKS: "127.0.0.1"
+      TZ: "Pacific/Auckland"
+      USE_CLIENT_RELAYHOSTS: "yes"
+    

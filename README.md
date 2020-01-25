@@ -4,7 +4,9 @@ Postfix SMTP Relay.
 
 Drop-in Docker image for SMTP relaying. Use wherever a connected service
 requires SMTP sending capabilities. Supports TLS out of the box and DKIM
-(if enabled and configured).
+(if enabled and configured).  Allows specifying which hosts are allowed to relay through mail server.
+
+NOTE:  This is a fork of https://hub.docker.com/r/freinet/postfix-relay respository and added a client relay hosts option.
 
 [![Docker Automated build](https://img.shields.io/docker/cloud/automated/freinet/postfix-relay.svg)](https://hub.docker.com/r/freinet/postfix-relay/)
 [![Docker Build Status](https://img.shields.io/docker/cloud/build/freinet/postfix-relay.svg)](https://hub.docker.com/r/freinet/postfix-relay/builds/)
@@ -31,6 +33,8 @@ Relay host parameters:
 - `RELAYHOST` - Postfix `relayhost`. Default ''. (example `mail.example.com:25`)
 - `RELAYHOST_AUTH` - Enable authentication for relayhost. Generally used with `RELAYHOST_PASSWORDMAP`. Default `no`.
 - `RELAYHOST_PASSWORDMAP` - relayhost password map in format: `RELAYHOST_PASSWORDMAP=mail1.example.com:user1:pass2,mail2.example.com:user2:pass2`
+- `USE_CLIENT_RELAYHOSTS` - Enable client relay restriction.  Default `no`.
+
 
 TLS parameters:
 
@@ -59,10 +63,33 @@ DKIM parameters:
 
 `docker run -e MAILNAME=mail.example.com panubo/postfix`
 
-## Volumes
+## Volumes andFiles
 
 No volumes are defined. If you want persistent spool storage then mount
 `/var/spool/postfix` outside of the container.
+
+If using `USE_CLIENT_RELAYHOSTS` mount a `relayhosts` file to `/etc/postfix/relayhosts` if you want to maintain a peristent list over restarts. 
+
+## Client Relay Hosts
+
+If you want to be able to change the hosts that can be allowed through the server during runtime, enable this option.
+
+During startup, a `/etc/postfix/relayhosts` file is created is not already available and hashed for postfix.  
+
+The relays hosts file is created in this format
+
+```
+#IP OK
+192.168.1.12 OK
+```
+
+Once the file has been edited, run the `/usr/sbin/update_relayhosts.sh` from the command line with
+
+```
+docker exec -it container_name /usr/sbin/update_relayhosts.sh
+```
+
+Change `container_name` to be the name of the container.  The `update_relayshosts.sh` is just a shortcut to postmap and then reloads the configuration into postfix.
 
 ## Test email
 
