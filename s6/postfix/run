@@ -136,7 +136,11 @@ if [ -n "${VIRTUAL_ALIASMAP}" ]; then
         echo "${ALIAS} ${DST}" >> /etc/postfix/virtual
     done
     postmap /etc/postfix/virtual
-    postconf -e virtual_alias_maps=hash:/etc/postfix/virtual
+    if [[ "${VIRTUAL_ALIASMAP_PCRE}" == "true" ]]; then
+        postconf -e virtual_alias_maps=pcre:/etc/postfix/virtual
+    else
+        postconf -e virtual_alias_maps=hash:/etc/postfix/virtual
+    fi
 fi
 
 # exit cleanly

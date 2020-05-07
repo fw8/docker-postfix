@@ -35,6 +35,7 @@ Relay host parameters:
 Virtual alias map:
 
 - `VIRTUAL_ALIASMAP` - virtual alias map in format: `VIRTUAL_ALIASMAP=alias@domain1.com:user@domain2.com,no-reply@somedomain.com:devnull`
+- `VIRTUAL_ALIASMAP_PCRE` - If "true" allows specifying virtual alias map as pcre_table
 
 TLS parameters:
 
