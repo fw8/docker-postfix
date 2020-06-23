@@ -91,6 +91,16 @@ if [ "${RELAYHOST_AUTH}" == "yes" ]; then
     postconf -e smtp_sasl_mechanism_filter="PLAIN LOGIN"
 fi
 
+if [ -n "${RELAYHOST_PASSWORDMAP_FILE}" ]; then
+  echo "postfix >> Reading password map file: ${RELAYHOST_PASSWORDMAP_FILE}"
+  if [ -e "${RELAYHOST_PASSWORDMAP_FILE}" ]; then
+    RELAYHOST_PASSWORDMAP=$(cat $RELAYHOST_PASSWORDMAP_FILE)
+    echo "postfix >> Read password map "
+  else
+    echo "postfix >> Specified password map file not found!"
+  fi
+fi
+
 if [ -n "${RELAYHOST_PASSWORDMAP}" ]; then
     echo "postfix >> Generating relayhost password map"
     truncate --size 0 /etc/postfix/sasl-passwords

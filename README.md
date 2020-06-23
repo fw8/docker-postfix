@@ -31,6 +31,7 @@ Relay host parameters:
 - `RELAYHOST` - Postfix `relayhost`. Default ''. (example `mail.example.com:25`)
 - `RELAYHOST_AUTH` - Enable authentication for relayhost. Generally used with `RELAYHOST_PASSWORDMAP`. Default `no`.
 - `RELAYHOST_PASSWORDMAP` - relayhost password map in format: `RELAYHOST_PASSWORDMAP=mail1.example.com:user1:pass2,mail2.example.com:user2:pass2`
+- `RELAYHOST_PASSWORDMAP_FILE` - relayhost password map file, content is copied into RELAYHOST_PASSWORDMAP. Useful in combination with docker secrets.
 
 Virtual alias map:
 
