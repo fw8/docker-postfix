@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-
 set -e
 
 [ "$DEBUG" == 'true' ] && set -x
@@ -31,6 +30,38 @@ if [ "${USE_DKIM}" == "yes" ]; then
     postconf -e milter_default_action="accept"
     postconf -e smtpd_milters="inet:localhost:8891"
     postconf -e non_smtpd_milters="inet:localhost:8891"
+fi
+
+# Relay Restrictions
+: "${USE_RELAY:=no}"
+
+if [ "${USE_CLIENT_RELAYHOSTS}" == "yes" ]; then
+    echo "postfix >> Enabling client relay hosts file"
+    sed -i 's/permit_mynetworks permit_sasl_authenticated/permit_mynetworks check_client_access hash:\/etc\/postfix\/relayhosts permit_sasl_authenticated/g' /etc/postfix/main.cf
+	
+	#if no relay hosts file, then create it
+	if [ ! -f /etc/postfix/relayhosts ]; then
+	    touch /etc/postfix/relayhosts
+	fi
+        # Set ownership in case passed in
+        chown root /etc/postfix/relayhosts
+	postmap /etc/postfix/relayhosts
+fi
+
+# Transport Maps
+: "${USE_TRANSPORT_MAPS:=no}"
+
+if [ "${USE_TRANSPORT_MAPS}" == "yes" ]; then
+    echo "postfix >> Enabling transport maps file"
+    postconf -e transport_maps="hash:/etc/postfix/transport"
+
+        #if no transport maps file, then create it
+        if [ ! -f /etc/postfix/transport ]; then
+            touch /etc/postfix/transport
+        fi
+        # Set ownership in case passed in
+        chown root /etc/postfix/transport
+        postmap /etc/postfix/transport
 fi
 
 # TLS

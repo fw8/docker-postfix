@@ -1,6 +1,6 @@
 # Postfix SMTP Relay
 
-FROM debian:stretch
+FROM debian:buster
 
 EXPOSE 25 587
 
@@ -53,6 +53,8 @@ COPY opendkim.conf.sh /etc/
 
 COPY s6 /etc/s6/
 COPY entry.sh /
+COPY update_clientrelayhosts.sh /usr/sbin/
+COPY update_transport.sh /usr/sbin/
 
 ENTRYPOINT ["/entry.sh"]
 CMD ["/usr/bin/s6-svscan", "/etc/s6"]

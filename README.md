@@ -4,12 +4,9 @@ Postfix SMTP Relay.
 
 Drop-in Docker image for SMTP relaying. Use wherever a connected service
 requires SMTP sending capabilities. Supports TLS out of the box and DKIM
-(if enabled and configured).
+(if enabled and configured).  Allows specifying which hosts are allowed to relay through mail server.
 
-[![Docker Automated build](https://img.shields.io/docker/cloud/automated/freinet/postfix-relay.svg)](https://hub.docker.com/r/freinet/postfix-relay/)
-[![Docker Build Status](https://img.shields.io/docker/cloud/build/freinet/postfix-relay.svg)](https://hub.docker.com/r/freinet/postfix-relay/builds/)
-[![Docker image size](https://images.microbadger.com/badges/image/freinet/postfix-relay.svg)](https://microbadger.com/images/freinet/postfix-relay)
-[![Docker image version](https://images.microbadger.com/badges/version/freinet/postfix-relay.svg)](https://microbadger.com/images/freinet/postfix-relay)
+NOTE:  This is a fork of https://hub.docker.com/r/freinet/postfix-relay respository and added a client relay hosts option.
 
 ## Environment Variables
 
@@ -31,6 +28,8 @@ Relay host parameters:
 - `RELAYHOST` - Postfix `relayhost`. Default ''. (example `mail.example.com:25`)
 - `RELAYHOST_AUTH` - Enable authentication for relayhost. Generally used with `RELAYHOST_PASSWORDMAP`. Default `no`.
 - `RELAYHOST_PASSWORDMAP` - relayhost password map in format: `RELAYHOST_PASSWORDMAP=mail1.example.com:user1:pass2,mail2.example.com:user2:pass2`
+- `USE_CLIENT_RELAYHOSTS` - Enable client relay restriction.  Default `no`.
+
 
 Virtual alias map:
 
@@ -63,10 +62,41 @@ DKIM parameters:
 
 `docker run -e MAILNAME=mail.example.com panubo/postfix`
 
-## Volumes
+## Volumes andFiles
 
 No volumes are defined. If you want persistent spool storage then mount
 `/var/spool/postfix` outside of the container.
+
+If using `USE_CLIENT_RELAYHOSTS` mount a `relayhosts` file to `/etc/postfix/relayhosts` if you want to maintain a peristent list over restarts. 
+
+If using `USE_TRANSPORT_MAPS` mount a `transport` file to `/etc/postfix/transport`.
+
+## Client Relay Hosts
+
+If you want to be able to change the hosts that can be allowed through the server during runtime, enable this option.
+
+During startup, a `/etc/postfix/relayhosts` file is created is not already available and hashed for postfix.  
+
+The relays hosts file is created in this format
+
+```
+#IP OK
+192.168.1.12 OK
+```
+
+Once the file has been edited, run the `/usr/sbin/update_clientrelayhosts.sh` from the command line with
+
+```
+docker exec -it container_name /usr/sbin/update_clientrelayhosts.sh
+```
+
+Change `container_name` to be the name of the container.  The `update_clientrelayhosts.sh` is just a shortcut to postmap and then reloads the configuration into postfix.
+
+## Transport Maps
+Sometimes you want to direct where email is being sent to.  This is achieved by using transport maps.  Create a file and map it through to `/etc/postfix/transport` in the image.  Use the `USE_TRANSPORT_MAPS="yes"` environment option to enable. 
+
+Once the file has been modified in a running system, run the `update_transport.sh` command to create a hashfile and reload postfix.
+
 
 ## Test email
 

@@ -1,1 +1,6 @@
 dkim.key
+.settings
+.project
+.buildpath
+.gitignore.swp
+docker-compose.yml
