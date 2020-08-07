@@ -43,7 +43,25 @@ if [ "${USE_CLIENT_RELAYHOSTS}" == "yes" ]; then
 	if [ ! -f /etc/postfix/relayhosts ]; then
 	    touch /etc/postfix/relayhosts
 	fi
+        # Set ownership in case passed in
+        chown root /etc/postfix/relayhosts
 	postmap /etc/postfix/relayhosts
+fi
+
+# Transport Maps
+: "${USE_TRANSPORT_MAPS:=no}"
+
+if [ "${USE_TRANSPORT_MAPS}" == "yes" ]; then
+    echo "postfix >> Enabling transport maps file"
+    postconf -e transport_maps="hash:/etc/postfix/transport"
+
+        #if no transport maps file, then create it
+        if [ ! -f /etc/postfix/transport ]; then
+            touch /etc/postfix/transport
+        fi
+        # Set ownership in case passed in
+        chown root /etc/postfix/transport
+        postmap /etc/postfix/transport
 fi
 
 # TLS

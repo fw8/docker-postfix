@@ -65,6 +65,8 @@ No volumes are defined. If you want persistent spool storage then mount
 
 If using `USE_CLIENT_RELAYHOSTS` mount a `relayhosts` file to `/etc/postfix/relayhosts` if you want to maintain a peristent list over restarts. 
 
+If using `USE_TRANSPORT_MAPS` mount a `transport` file to `/etc/postfix/transport`.
+
 ## Client Relay Hosts
 
 If you want to be able to change the hosts that can be allowed through the server during runtime, enable this option.
@@ -85,6 +87,12 @@ docker exec -it container_name /usr/sbin/update_clientrelayhosts.sh
 ```
 
 Change `container_name` to be the name of the container.  The `update_clientrelayhosts.sh` is just a shortcut to postmap and then reloads the configuration into postfix.
+
+## Transport Maps
+Sometimes you want to direct where email is being sent to.  This is achieved by using transport maps.  Create a file and map it through to `/etc/postfix/transport` in the image.  Use the `USE_TRANSPORT_MAPS="yes"` environment option to enable. 
+
+Once the file has been modified in a running system, run the `update_transport.sh` command to create a hashfile and reload postfix.
+
 
 ## Test email
 
